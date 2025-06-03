@@ -1,8 +1,9 @@
 import os
 import sys
 
-# Agregar el directorio backend/src al PYTHONPATH
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend', 'src'))
+# Agregar la raíz del proyecto al PYTHONPATH
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from backend.web.app import app
 from backend.src.database.postgres_database import PostgresDatabase
@@ -20,6 +21,4 @@ if __name__ == '__main__':
     db = inicializar_base_datos()
     
     # Iniciar la aplicación web
-    app.run(debug=True)
-
-#python web_main.py ejecutar este comando directamente en consola 
+    app.run(debug=True) 

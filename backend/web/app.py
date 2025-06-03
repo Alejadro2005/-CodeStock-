@@ -42,12 +42,16 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 app.config['DATABASE'] = PostgresDatabase(CURRENT_CONFIG)
 
 # Registrar blueprints
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(main_bp)
 app.register_blueprint(productos_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(ventas_bp)
 app.register_blueprint(historial_bp)
+
+# Imprimir rutas activas para depuración
+for rule in app.url_map.iter_rules():
+    print(rule, file=sys.stderr)
 
 @app.before_request
 def before_request():
@@ -76,4 +80,6 @@ if __name__ == '__main__':
     db.create_tables()
     db.disconnect()
     # Flask escuchando en 0.0.0.0 para acceso desde otros pods en Kubernetes
+    for rule in app.url_map.iter_rules():
+        print(rule, file=sys.stderr)
     app.run(host="0.0.0.0", port=5000, debug=True)
