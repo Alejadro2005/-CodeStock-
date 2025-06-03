@@ -71,4 +71,5 @@ if __name__ == '__main__':
     db.connect()
     db.create_tables()
     db.disconnect()
-    app.run(debug=True) 
+    # Flask escuchando en 0.0.0.0 para acceso desde otros pods en Kubernetes
+    app.run(host="0.0.0.0", port=5000, debug=True)
