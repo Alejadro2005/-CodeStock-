@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codestock-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codestock-backend
+  template:
+    metadata:
+      labels:
+        app: codestock-backend
+    spec:
+      containers:
+      - name: backend
+        image: alejandromons/codestock-backend:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "codestock-db"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_NAME
+          value: "codestock"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "postgres"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codestock-backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: codestock-backend
+  ports:
+    - port: 5000
+      targetPort: 5000 

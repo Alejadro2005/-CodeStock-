@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Login - CodeStock{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-6">
+        <div class="text-center mb-4">
+            <span style="font-size:2.5rem; font-weight:bold; color:#2563eb; letter-spacing:2px;">CodeStock</span>
+        </div>
+        <div class="card shadow" style="border: none; border-radius: 2rem; background: #2563eb;">
+            <div class="card-header text-white text-center" style="background: transparent; border-radius: 2rem 2rem 0 0; border: none;">
+                <h3 class="mb-0">Login</h3>
+            </div>
+            <div class="card-body" style="background: transparent; border-radius: 0 0 2rem 2rem;">
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="form-group">
+                        <label for="id_usuario" class="text-white">ID de Usuario</label>
+                        <input type="number" class="form-control" id="id_usuario" name="id_usuario" required style="border-radius: 1rem;">
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="text-white">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required style="border-radius: 1rem;">
+                    </div>
+                    <button type="submit" class="btn btn-block text-white" style="background: #1d4ed8; border-radius: 1rem;">Iniciar Sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
