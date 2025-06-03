@@ -79,7 +79,7 @@ spec:
     }
     post {
         always {
-            cleanWs()
+            deleteDir()
         }
     }
 } 
