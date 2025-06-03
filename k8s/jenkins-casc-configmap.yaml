@@ -45,9 +45,6 @@ data:
                     image: "gcr.io/kaniko-project/executor:v1.13.0"
                     command: "cat"
                     ttyEnabled: true
-                    volumeMounts:
-                      - mountPath: "/kaniko/.docker"
-                        name: "kaniko-secret"
                 volumes:
                   - secretVolume:
                       secretName: regcred 
