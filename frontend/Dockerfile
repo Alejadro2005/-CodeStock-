@@ -1,21 +1,16 @@
+# Etapa de construcción
 FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Copiar package.json y package-lock.json
+# Copiar solo los archivos necesarios para instalar dependencias
 COPY package*.json ./
 
-# Instalar dependencias con optimizaciones
-RUN npm ci --prefer-offline --no-audit
+# Instalar dependencias con optimizaciones y caché
+RUN npm ci --prefer-offline --no-audit --cache /tmp/npm-cache
 
 # Copiar el código fuente
 COPY . .
-
-# Da permisos a la carpeta de la app
-RUN chown -R node:node /app
-
-# Cambia al usuario node
-USER node
 
 # Construir la aplicación con optimizaciones
 ENV NODE_ENV=production

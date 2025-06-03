@@ -10,6 +10,7 @@ from pathlib import Path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from flask import Flask, g
+from flask_cors import CORS
 from dotenv import load_dotenv
 from backend.src.database.postgres_database import PostgresDatabase
 from backend.src.database.database_config import CURRENT_CONFIG
@@ -33,6 +34,9 @@ cargar_variables_entorno()
 TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../frontend/templates'))
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.secret_key = os.getenv('SECRET_KEY', 'clave_secreta_default')
+
+# Configurar CORS
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configuración de la base de datos
 app.config['DATABASE'] = PostgresDatabase(CURRENT_CONFIG)
