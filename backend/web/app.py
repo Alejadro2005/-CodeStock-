@@ -31,7 +31,7 @@ def cargar_variables_entorno():
 cargar_variables_entorno()
 
 # Configurar la ruta de las plantillas (templates) en frontend/templates
-TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../frontend/templates'))
+TEMPLATE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
 app = Flask(__name__, template_folder=TEMPLATE_DIR)
 app.secret_key = os.getenv('SECRET_KEY', 'clave_secreta_default')
 
