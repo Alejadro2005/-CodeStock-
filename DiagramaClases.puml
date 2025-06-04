@@ -1,0 +1,61 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam classFontColor black
+skinparam classBackgroundColor #eaffc6
+
+class Tienda {
+    +registrar_venta(venta: Venta)
+    +generar_historial(): list[Venta]
+    +validar_stock_venta(id_producto: int, cantidad: int): bool
+}
+
+class Inventario {
+    +agregar_producto(producto: Producto)
+    +eliminar_producto(id_producto: int)
+    +filtrar_por_stock_bajo(): list[Producto]
+    +actualizar_stock(id_producto: int, cantidad: int)
+}
+
+class Producto {
+    +id: int
+    +nombre: str
+    +precio: float
+    +cantidad: int
+    +categoria: str
+    +stock_minimo: int
+    +actualizar_stock(nueva_cantidad: int)
+}
+
+class Venta {
+    +id: int
+    +fecha: str
+    +productos_vendidos: list[dict]
+    +total: float
+    +calcular_total(inventario: dict): bool
+    +validar_stock(inventario: dict): bool
+}
+
+class Usuario {
+    +id: int
+    +nombre: str
+    +rol: str
+    +contraseña_hasheada: str
+    +iniciar_sesion(contraseña: str): bool
+    +cambiar_contraseña(nueva_contraseña: str)
+}
+
+class GestorUsuarios {
+    +crear_usuario(usuario: Usuario)
+    +eliminar_usuario(id_usuario: int)
+    +validar_rol(id_usuario: int, rol_requerido: str): bool
+}
+
+Tienda --> Inventario
+Tienda --> Venta
+Tienda --> GestorUsuarios
+Inventario --> Producto
+Venta --> Usuario
+Venta --> Producto
+GestorUsuarios --> Usuario
+
+@enduml 
