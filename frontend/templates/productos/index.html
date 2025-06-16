@@ -14,6 +14,7 @@
             <th>Cantidad</th>
             <th>Categoría</th>
             <th>Stock Mínimo</th>
+            <th>Advertencia</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -22,18 +23,72 @@
         <tr>
             <td>{{ producto.id }}</td>
             <td>{{ producto.nombre }}</td>
-            <td>{{ producto.precio }}</td>
+            <td><span class="precio-colombiano" data-value="{{ producto.precio }}"></span></td>
             <td>{{ producto.cantidad }}</td>
             <td>{{ producto.categoria }}</td>
             <td>{{ producto.stock_minimo }}</td>
             <td>
+                {% if producto.cantidad <= producto.stock_minimo %}
+                    <span title="¡Stock bajo! Considera comprar más." style="color: #ff9800; font-size: 1.5em; vertical-align: middle;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                    </span>
+                {% endif %}
+            </td>
+            <td>
                 <a href="{{ url_for('productos.actualizar', id=producto.id) }}" class="btn btn-sm btn-warning">Editar</a>
                 <form action="{{ url_for('productos.eliminar', id=producto.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-eliminar-producto">Eliminar</button>
                 </form>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="modalEliminarProducto" tabindex="-1" role="dialog" aria-labelledby="modalEliminarProductoLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalEliminarProductoLabel">Eliminar producto</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar el producto <strong id="nombreProductoEliminar"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let idAEliminar = null;
+    let formAEliminar = null;
+    document.querySelectorAll('.btn-eliminar-producto').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = btn.closest('form');
+            idAEliminar = form.action.split('/').pop();
+            formAEliminar = form;
+            const nombre = form.closest('tr').querySelector('td:nth-child(2)').textContent;
+            document.getElementById('nombreProductoEliminar').textContent = nombre;
+            $('#modalEliminarProducto').modal('show');
+        });
+    });
+    document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+        if (formAEliminar) {
+            formAEliminar.submit();
+        }
+        $('#modalEliminarProducto').modal('hide');
+    });
+});
+</script>
+{% endblock %}
 {% endblock %} 

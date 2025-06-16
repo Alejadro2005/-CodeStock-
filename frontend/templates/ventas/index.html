@@ -23,12 +23,12 @@
             <td>{{ venta.id }}</td>
             <td>{{ venta.nombre_usuario }}</td>
             <td>{{ venta.productos_legibles }}</td>
-            <td>${{ '%.2f'|format(venta.total) }}</td>
+            <td><span class="precio-colombiano" data-value="{{ venta.total }}"></span></td>
             <td>{{ venta.metodo_pago if venta.metodo_pago else 'No disponible' }}</td>
             <td>{{ venta.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</td>
             <td>
                 <form action="{{ url_for('ventas.eliminar', id=venta.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-eliminar-venta">Eliminar</button>
                 </form>
                 <form action="{{ url_for('ventas.deshacer', id=venta.id) }}" method="POST" style="display:inline;">
                     <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('¿Seguro que deseas deshacer esta venta?')">Deshacer</button>
@@ -38,4 +38,49 @@
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Modal de confirmación de eliminación de venta -->
+<div class="modal fade" id="modalEliminarVenta" tabindex="-1" role="dialog" aria-labelledby="modalEliminarVentaLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalEliminarVentaLabel">Eliminar venta</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar la venta de <strong id="nombreVentaEliminar"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarEliminarVenta">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let formAEliminar = null;
+    document.querySelectorAll('.btn-eliminar-venta').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = btn.closest('form');
+            formAEliminar = form;
+            const nombre = form.closest('tr').querySelector('td:nth-child(2)').textContent;
+            document.getElementById('nombreVentaEliminar').textContent = nombre;
+            $('#modalEliminarVenta').modal('show');
+        });
+    });
+    document.getElementById('btnConfirmarEliminarVenta').addEventListener('click', function() {
+        if (formAEliminar) {
+            formAEliminar.submit();
+        }
+        $('#modalEliminarVenta').modal('hide');
+    });
+});
+</script>
 {% endblock %} 

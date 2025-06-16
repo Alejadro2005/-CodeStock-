@@ -23,11 +23,56 @@
             <td>
                 <a href="{{ url_for('usuarios.actualizar', id=usuario.id) }}" class="btn btn-sm btn-warning">Editar</a>
                 <form action="{{ url_for('usuarios.eliminar', id=usuario.id) }}" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
+                    <button type="button" class="btn btn-sm btn-danger btn-eliminar-usuario">Eliminar</button>
                 </form>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<!-- Modal de confirmación de eliminación de usuario -->
+<div class="modal fade" id="modalEliminarUsuario" tabindex="-1" role="dialog" aria-labelledby="modalEliminarUsuarioLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalEliminarUsuarioLabel">Eliminar usuario</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar el usuario <strong id="nombreUsuarioEliminar"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarEliminarUsuario">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let formAEliminar = null;
+    document.querySelectorAll('.btn-eliminar-usuario').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = btn.closest('form');
+            formAEliminar = form;
+            const nombre = form.closest('tr').querySelector('td:nth-child(2)').textContent;
+            document.getElementById('nombreUsuarioEliminar').textContent = nombre;
+            $('#modalEliminarUsuario').modal('show');
+        });
+    });
+    document.getElementById('btnConfirmarEliminarUsuario').addEventListener('click', function() {
+        if (formAEliminar) {
+            formAEliminar.submit();
+        }
+        $('#modalEliminarUsuario').modal('hide');
+    });
+});
+</script>
 {% endblock %} 

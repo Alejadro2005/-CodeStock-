@@ -1,31 +1,145 @@
 {% extends "base.html" %}
 
-{% block title %}Login - CodeStock{% endblock %}
+{% block title %}Login - M y A{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-6">
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="col-md-6 col-lg-4">
         <div class="text-center mb-4">
-            <span style="font-size:2.5rem; font-weight:bold; color:#2563eb; letter-spacing:2px;">CodeStock</span>
+            <span style="
+                font-size: 2.5rem; 
+                font-weight: bold; 
+                background: linear-gradient(45deg, #2196f3 30%, #e91e63 90%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                letter-spacing: 2px;
+            ">M y A</span>
         </div>
-        <div class="card shadow" style="border: none; border-radius: 2rem; background: #2563eb;">
-            <div class="card-header text-white text-center" style="background: transparent; border-radius: 2rem 2rem 0 0; border: none;">
-                <h3 class="mb-0">Login</h3>
+        <div class="card shadow" style="
+            border: none; 
+            border-radius: 2rem; 
+            background: linear-gradient(45deg, rgba(33, 150, 243, 0.05) 30%, rgba(233, 30, 99, 0.05) 90%);
+            backdrop-filter: blur(10px);
+        ">
+            <div class="card-header text-center" style="
+                background: transparent; 
+                border-radius: 2rem 2rem 0 0; 
+                border: none;
+                padding-top: 2rem;
+            ">
+                <h3 class="mb-0" style="
+                    color: #2c3e50;
+                    font-weight: 600;
+                ">Iniciar Sesión</h3>
             </div>
-            <div class="card-body" style="background: transparent; border-radius: 0 0 2rem 2rem;">
+            <div class="card-body" style="
+                background: transparent; 
+                border-radius: 0 0 2rem 2rem;
+                padding: 2rem;
+            ">
                 <form method="POST" action="{{ url_for('auth.login') }}">
                     <div class="form-group">
-                        <label for="id_usuario" class="text-white">ID de Usuario</label>
-                        <input type="number" class="form-control" id="id_usuario" name="id_usuario" required style="border-radius: 1rem;">
+                        <label for="nombre_usuario" style="color: #546e7a; font-weight: 500;">Nombre de Usuario</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="
+                                    background: transparent;
+                                    border: 1px solid rgba(33, 150, 243, 0.2);
+                                    border-right: none;
+                                    border-radius: 1rem 0 0 1rem;
+                                ">
+                                    <i class="fas fa-user" style="color: #2196f3;"></i>
+                                </span>
+                            </div>
+                            <select class="custom-select" id="nombre_usuario" name="nombre_usuario" required>
+                                <option value="" disabled selected>Seleccione su usuario</option>
+                                {% for usuario in usuarios %}
+                                    <option value="{{ usuario.nombre }}">{{ usuario.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="password" class="text-white">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" required style="border-radius: 1rem;">
+                        <label for="password" style="color: #546e7a; font-weight: 500;">Contraseña</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style="
+                                    background: transparent;
+                                    border: 1px solid rgba(33, 150, 243, 0.2);
+                                    border-right: none;
+                                    border-radius: 1rem 0 0 1rem;
+                                ">
+                                    <i class="fas fa-lock" style="color: #2196f3;"></i>
+                                </span>
+                            </div>
+                            <input type="password" 
+                                class="form-control" 
+                                id="password" 
+                                name="password" 
+                                required 
+                                style="
+                                    border-radius: 0 1rem 1rem 0;
+                                    border: 1px solid rgba(33, 150, 243, 0.2);
+                                    border-left: none;
+                                    padding: 0.75rem 1rem;
+                                "
+                                placeholder="Ingrese su contraseña">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-block text-white" style="background: #1d4ed8; border-radius: 1rem;">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn-block" style="
+                        background: linear-gradient(45deg, #2196f3 30%, #e91e63 90%);
+                        color: white;
+                        border-radius: 1rem;
+                        padding: 0.75rem;
+                        font-weight: 600;
+                        margin-top: 1rem;
+                        transition: all 0.2s;
+                    ">Iniciar Sesión</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Mejora visual del select de usuario */
+.input-group .form-control, .input-group .custom-select {
+    border-radius: 0 1rem 1rem 0 !important;
+    border: 1px solid rgba(33, 150, 243, 0.2);
+    border-left: none;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    background: #f8fbff;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.04);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-group .form-control:focus, .input-group .custom-select:focus {
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px #90caf9;
+    background: #fff;
+}
+.input-group .custom-select {
+    width: 100%;
+    min-width: 0;
+    font-size: 1.1rem;
+    height: 48px;
+    line-height: 1.5;
+    padding: 0.75rem 2.5em 0.75rem 1rem;
+    border-radius: 0 1rem 1rem 0 !important;
+    border: 1px solid rgba(33, 150, 243, 0.2);
+    border-left: none;
+    background: #f8fbff;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.04);
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%232196f3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5em 1.5em;
+}
+.input-group-prepend .input-group-text {
+    border-radius: 1rem 0 0 1rem !important;
+    background: #e3f2fd;
+    border: 1px solid rgba(33, 150, 243, 0.2);
+    border-right: none;
+}
+</style>
 {% endblock %} 

@@ -38,20 +38,23 @@ def login():
     Muestra el formulario de login y gestiona la autenticación de usuarios.
     """
     if request.method == 'POST':
-        id_usuario = request.form.get('id_usuario')
+        nombre_usuario = request.form.get('nombre_usuario')
         password = request.form.get('password')
         try:
-            usuario = g.db.get_user(int(id_usuario))
+            # Buscar usuario por nombre (ignorando mayúsculas/minúsculas)
+            usuarios = g.db.get_all_users()
+            usuario = next((u for u in usuarios if u['nombre'].lower() == nombre_usuario.lower()), None)
             if usuario and usuario['password'] == password:
                 session['user_id'] = usuario['id']
                 session['user_role'] = usuario['rol']
+                session['user_name'] = usuario['nombre']
                 flash('Login exitoso', 'success')
                 return redirect(url_for('main.index'))
             else:
                 flash('Credenciales incorrectas', 'error')
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
-    return render_template('login.html')
+    return render_template('login.html', usuarios=g.db.get_all_users())
 
 @auth_bp.route('/logout')
 def logout():

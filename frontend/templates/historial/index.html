@@ -5,7 +5,7 @@
 {% block content %}
 <h2>Historial de Ventas</h2>
 <form action="{{ url_for('historial.eliminar') }}" method="POST" style="display:inline;">
-    <button type="submit" class="btn btn-danger mb-3" onclick="return confirm('¿Estás seguro de eliminar todo el historial?')">Eliminar Historial</button>
+    <button type="button" class="btn btn-danger mb-3 btn-eliminar-historial">Eliminar Historial</button>
 </form>
 <table class="table table-striped">
     <thead class="thead-dark">
@@ -27,4 +27,46 @@
         {% endfor %}
     </tbody>
 </table>
+<!-- Modal de confirmación de eliminación de historial -->
+<div class="modal fade" id="modalEliminarHistorial" tabindex="-1" role="dialog" aria-labelledby="modalEliminarHistorialLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalEliminarHistorialLabel">Eliminar historial</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar <strong>todo el historial</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarEliminarHistorial">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let formAEliminar = null;
+    document.querySelectorAll('.btn-eliminar-historial').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = btn.closest('form');
+            formAEliminar = form;
+            $('#modalEliminarHistorial').modal('show');
+        });
+    });
+    document.getElementById('btnConfirmarEliminarHistorial').addEventListener('click', function() {
+        if (formAEliminar) {
+            formAEliminar.submit();
+        }
+        $('#modalEliminarHistorial').modal('hide');
+    });
+});
+</script>
 {% endblock %} 

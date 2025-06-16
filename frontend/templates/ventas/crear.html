@@ -7,8 +7,9 @@
 <form method="POST" action="{{ url_for('ventas.crear') }}" id="ventaForm">
     <input type="hidden" name="metodo_pago" id="metodo_pago" value="">
     <div class="form-group">
-        <label for="id_usuario">ID de Usuario</label>
-        <input type="number" class="form-control" id="id_usuario" name="id_usuario" required>
+        <label for="usuario_nombre">Usuario</label>
+        <input type="text" class="form-control" id="usuario_nombre" value="{{ session['user_name'] }}" readonly>
+        <input type="hidden" name="id_usuario" id="id_usuario" value="{{ session['user_id'] }}">
     </div>
     <div class="form-group">
         <label>Buscar Producto</label>
@@ -21,7 +22,13 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center mb-2">
                             <input type="checkbox" name="producto_{{ producto.id }}" id="producto_{{ producto.id }}" data-producto-id="{{ producto.id }}" data-precio="{{ producto.precio }}" class="mr-2" style="width: 1.5em; height: 1.5em;" {% if producto.cantidad == 0 %}disabled{% endif %}>
-                            <h5 class="card-title mb-0">{{ producto.nombre }}</h5>
+                            <h5 class="card-title mb-0">{{ producto.nombre }}
+                                {% if producto.cantidad <= producto.stock_minimo %}
+                                    <span title="¡Stock bajo! Considera comprar más." style="color: #ff9800; font-size: 1.2em; vertical-align: middle; margin-left: 0.3em;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                                    </span>
+                                {% endif %}
+                            </h5>
                         </div>
                         <p class="card-text mb-1">
                             <span class="badge badge-info">{{ producto.cantidad }} disponibles</span>
@@ -33,7 +40,7 @@
                             </div>
                             <input type="number" class="form-control" name="cantidad_{{ producto.id }}" id="cantidad_{{ producto.id }}" min="1" max="{{ producto.cantidad }}" placeholder="0" style="max-width: 80px;" {% if producto.cantidad == 0 %}disabled{% endif %} disabled required>
                         </div>
-                        <p class="card-text mt-2"><strong>Precio:</strong> ${{ '%.2f'|format(producto.precio) }}</p>
+                        <p class="card-text mt-2"><strong>Precio:</strong> <span class="precio-colombiano" data-value="{{ producto.precio }}"></span></p>
                     </div>
                 </div>
             </div>
@@ -73,12 +80,12 @@
         </button>
       </div>
       <div class="modal-body">
-        <p><strong>Total de la venta:</strong> $<span id="totalVenta">0.00</span></p>
+        <p><strong>Total de la venta:</strong> <span id="totalVenta" class="precio-colombiano" data-value="0"></span></p>
         <div class="form-group">
           <label for="montoCliente">Cantidad entregada por el cliente</label>
-          <input type="number" class="form-control" id="montoCliente" min="0" step="0.01">
+          <input type="number" class="form-control" id="montoCliente" min="0" step="1000">
         </div>
-        <p><strong>Cambio a devolver:</strong> $<span id="cambioVenta">0.00</span></p>
+        <p><strong>Cambio a devolver:</strong> <span id="cambioVenta" class="precio-colombiano" data-value="0"></span></p>
         <div id="alertaCambio" class="alert alert-danger d-none">El monto entregado es insuficiente.</div>
       </div>
       <div class="modal-footer">
@@ -88,6 +95,14 @@
     </div>
   </div>
 </div>
+
+<style>
+.card.selected {
+    border: 2px solid #007bff !important;
+    box-shadow: 0 0 10px #b3d7ff;
+    background: #f0f8ff;
+}
+</style>
 {% endblock %}
 
 {% block scripts %}
@@ -112,6 +127,9 @@ document.querySelectorAll('input[type=checkbox][name^=producto_]').forEach(funct
         var cantidadInput = document.getElementById('cantidad_' + prodId);
         if (this.checked) {
             cantidadInput.disabled = false;
+            if (!cantidadInput.value || cantidadInput.value === '0') {
+                cantidadInput.value = '1';
+            }
             cantidadInput.focus();
         } else {
             cantidadInput.disabled = true;
@@ -156,9 +174,11 @@ btnMostrarMetodoPago.addEventListener('click', function(e) {
         return;
     }
     totalVentaCalculado = total;
-    totalVentaSpan.textContent = total.toFixed(2);
+    totalVentaSpan.setAttribute('data-value', total);
+    totalVentaSpan.textContent = formatColombianPeso(total);
     montoClienteInput.value = '';
-    cambioVentaSpan.textContent = '0.00';
+    cambioVentaSpan.setAttribute('data-value', 0);
+    cambioVentaSpan.textContent = formatColombianPeso(0);
     alertaCambio.classList.add('d-none');
     modalMetodoPago.modal('show');
 });
@@ -177,10 +197,11 @@ btnTransferencia.addEventListener('click', function() {
 
 // Calcular cambio en tiempo real
 montoClienteInput.addEventListener('input', function() {
-    const total = parseFloat(totalVentaSpan.textContent);
+    const total = parseFloat(totalVentaSpan.getAttribute('data-value'));
     const entregado = parseFloat(montoClienteInput.value) || 0;
     const cambio = entregado - total;
-    cambioVentaSpan.textContent = cambio.toFixed(2);
+    cambioVentaSpan.setAttribute('data-value', cambio);
+    cambioVentaSpan.textContent = formatColombianPeso(cambio);
     if (cambio < 0) {
         alertaCambio.classList.remove('d-none');
         btnTerminarVenta.disabled = true;
@@ -193,7 +214,7 @@ montoClienteInput.addEventListener('input', function() {
 // Terminar venta
 btnTerminarVenta.addEventListener('click', function() {
     // Solo enviar si el cambio es >= 0
-    const total = parseFloat(totalVentaSpan.textContent);
+    const total = parseFloat(totalVentaSpan.getAttribute('data-value'));
     const entregado = parseFloat(montoClienteInput.value) || 0;
     if (entregado < total) {
         alertaCambio.classList.remove('d-none');
@@ -202,5 +223,36 @@ btnTerminarVenta.addEventListener('click', function() {
     modalVenta.modal('hide');
     ventaForm.submit();
 });
+
+document.querySelectorAll('.producto-item .card').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+        // Evitar que el clic en el checkbox dispare dos veces
+        if (e.target.tagName.toLowerCase() === 'input') return;
+        const checkbox = card.querySelector('input[type=checkbox]');
+        if (checkbox && !checkbox.disabled) {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+        }
+    });
+});
+
+// Resaltar tarjeta seleccionada
+function updateCardSelection() {
+    document.querySelectorAll('.producto-item .card').forEach(function(card) {
+        const checkbox = card.querySelector('input[type=checkbox]');
+        if (checkbox && checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+    });
+}
+
+document.querySelectorAll('input[type=checkbox][name^=producto_]').forEach(function(checkbox) {
+    checkbox.addEventListener('change', updateCardSelection);
+});
+
+// Inicializar selección visual
+updateCardSelection();
 </script>
 {% endblock %} 

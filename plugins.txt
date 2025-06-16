@@ -1,7 +1,0 @@
-kubernetes:1.31.3
-configuration-as-code:1932.v75cb_b_f1b_698d
-workflow-aggregator:2.6
-credentials-binding:687.v619cb_15e923f
-git:5.7.0
-blueocean:1.27.19
-docker-workflow:1.28 

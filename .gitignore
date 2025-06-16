@@ -74,11 +74,7 @@ yarn-error.log*
 # Docker
 *.pid
 
-# Jenkins
-.jenkins/jenkins-backup.tar.gz
-
 # Ignorar archivos de backup y archivos grandes
-jenkins-backup.tar.gz
 *.tar.gz
 *.zip
 *.bak

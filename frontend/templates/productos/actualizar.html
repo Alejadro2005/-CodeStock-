@@ -11,7 +11,7 @@
     </div>
     <div class="form-group">
         <label for="precio">Precio</label>
-        <input type="number" step="0.01" class="form-control" id="precio" name="precio" value="{{ producto.precio }}" required>
+        <input type="text" class="form-control" id="precio" name="precio" value="{{ producto.precio }}" required>
     </div>
     <div class="form-group">
         <label for="cantidad">Cantidad</label>
@@ -66,6 +66,20 @@ document.getElementById('formActualizarProducto').addEventListener('submit', fun
     if (errores.length > 0) {
         alert(errores.join('\n'));
         e.preventDefault();
+    }
+    // Limpiar puntos del campo precio antes de enviar
+    let precioInput = document.getElementById('precio');
+    precioInput.value = precioInput.value.replace(/\./g, '');
+});
+
+// Formatear el campo de precio en tiempo real
+const precioInput = document.getElementById('precio');
+precioInput.addEventListener('input', function(e) {
+    let value = this.value.replace(/\D/g, '');
+    if (value) {
+        this.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    } else {
+        this.value = '';
     }
 });
 </script>
